@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { IoAddCircle } from 'react-icons/io5'
 import EventModal from './EventModal'
-import { startOfWeek, endOfWeek, addDays, format, isToday } from 'date-fns'
+import { startOfWeek, endOfWeek, addDays, format, isToday, setHours, getHours, startOfHour, addHours, setMinutes } from 'date-fns'
 
 type Color = 'bg-sky-400' | 'bg-blue-500' | 'bg-purple-500' | 'bg-pink-500' | 'bg-red-500' | 'bg-orange-500' | 'bg-yellow-500' | 'bg-lime-500' | 'bg-green-500'
 
-interface RenderCalendarProps { currentWeek: Date, currentHours: Date }
-const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek, currentHours }) => {
+interface RenderCalendarProps { currentWeek: Date }
+const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
   useEffect(() => {
     const savedEventNames: { [key: string]: { name: string, color: Color} } = {}
     for (let i = 0; i < localStorage.length; i++) {
@@ -45,14 +45,11 @@ const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek, currentHou
   }
 
   const generateHours = () => {
-    const firstHour = new Date(currentHours)
-    firstHour.setHours(0, 0, 0, 0)
-    const lastHour = new Date(firstHour)
-    lastHour.setHours(23, 59, 59, 999)
     const hours = []
-    while (firstHour <= lastHour) {
-      hours.push(new Date(firstHour))
-      firstHour.setHours(firstHour.getHours() + 1)
+    let currentHour = setHours(new Date(setMinutes(new Date(), 0)), 0)
+    for (let i = 0; i < 24; i++) {
+      hours.push(new Date(currentHour))
+      currentHour = addHours(currentHour, 1)
     }
     return hours
   }
