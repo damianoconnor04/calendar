@@ -36,7 +36,7 @@ const Calendar: React.FC = () => {
   
   return (
     <>
-      <header className='p-4 flex items-center gap-6 border-b border-gray-400'>
+      <header className='p-4 max-h-[10vh] h-full flex items-center gap-6 border-b border-gray-400'>
         <div>
           <button className='p-1.5 text-2xl text-neutral-700 rounded-full hover:bg-neutral-300/20 transition-colors' onClick={handlePreviousWeek}><IoChevronBack /></button>
           <button className='p-1.5 text-2xl text-neutral-700 rounded-full hover:bg-neutral-300/20 transition-colors' onClick={handleNextWeek}><IoChevronForward /></button>
@@ -46,8 +46,8 @@ const Calendar: React.FC = () => {
           <Dropdown
             arrowClosed={<IoCaretDown className='text-sm' />}
             arrowOpen={<IoCaretDown className='text-sm' />}
-            controlClassName='!p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
-            menuClassName='!border-none !bg-white !max-h-fit'
+            controlClassName='!cursor-pointer !p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
+            menuClassName='!border-none !bg-white !max-h-[60vh] !w-max !overflow-x-hidden'
             options={monthOptions}
             value={format(currentWeek, 'MMMM')}
             onChange={(e) => handleMonthChange(e)}
@@ -55,8 +55,8 @@ const Calendar: React.FC = () => {
           <Dropdown
             arrowClosed={<IoCaretDown className='text-sm' />}
             arrowOpen={<IoCaretDown className='text-sm' />}
-            controlClassName='!p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
-            menuClassName='!border-none !bg-white !max-h-fit'
+            controlClassName='!cursor-pointer !p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
+            menuClassName='!border-none !bg-white !max-h-[60vh] !w-max !overflow-x-hidden'
             options={yearOptions}
             value={format(currentWeek, 'yyyy')}
             onChange={(e) => handleYearChange(e)}

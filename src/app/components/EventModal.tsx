@@ -63,15 +63,6 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
   return (
     <div className={`w-full max-w-sm max-h-48 h-full bg-white p-2 ${roundedSides} border border-gray-400`} style={{ position: 'absolute', top: `${top}px`, left: `${left}px` }}>
 
-      <div className='flex items-center justify-between text-sm text-neutral-700 cursor-default'>
-        <time>{dayOfWeek}, {month} {date}</time>
-        <div className='flex py-2 items-center text-sm text-neutral-700 cursor-default'>
-          <time>{hourInt}</time>
-          <IoArrowForward className='text-sm p-0.5' />
-          <time>{nextHour}</time>
-        </div>
-      </div>
-
       <div className='relative w-full'>
         <label htmlFor={`${hour}`} className='w-full'>
           <input value={eventNames[clickedId].name.toString() || ''} onChange={handleEventNameChange} className='pr-16 w-full border-b-4 pt-1 pb-2 focus-visible:outline-none focus-visible:border-b-sky-400' />
@@ -86,8 +77,17 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
         </div>
       </div>
 
-      <div className='flex items-center gap-0.5 py-2'>
-        {colors.map((color, idx) => <button onClick={() => setColor(color)} key={idx} className={`w-2 h-2 p-2 aspect-square rounded-full ${color}`} />)}
+      <div className='flex items-center justify-between text-sm text-neutral-700 cursor-default'>
+        <time>{dayOfWeek}, {month} {date}</time>
+        <div className='flex py-2 items-center text-sm text-neutral-700 cursor-default'>
+          <time>{hourInt}</time>
+          <IoArrowForward className='text-sm p-0.5' />
+          <time>{nextHour}</time>
+        </div>
+      </div>
+
+      <div className='flex items-center gap-1'>
+        {colors.map((color, idx) => <button onClick={() => setColor(color)} key={idx} className={`w-4 h-4 aspect-square rounded-full ${color}`} />)}
       </div>
 
     </div>

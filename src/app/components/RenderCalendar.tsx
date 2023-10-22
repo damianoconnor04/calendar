@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { IoAddCircle } from 'react-icons/io5'
 import EventModal from './EventModal'
 import { startOfWeek, endOfWeek, addDays, format, isToday, setHours, getHours, startOfHour, addHours, setMinutes } from 'date-fns'
+import Link from 'next/link'
 
 type Color = 'bg-sky-400' | 'bg-blue-500' | 'bg-purple-500' | 'bg-pink-500' | 'bg-red-500' | 'bg-orange-500' | 'bg-yellow-500' | 'bg-lime-500' | 'bg-green-500'
 
@@ -67,7 +68,7 @@ const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
     const mappedHours = mapHoursToDaysOfWeek(hours)
 
     return (
-      <div className='h-full max-h-[calc(100%_-_4.825rem)] overflow-hidden'> {/* max h is 100% minus header height & mappedDates container height */}
+      <div className='h-full max-h-[calc(100%_-_10vh)] overflow-hidden'>
 
         <div className='grid grid-cols-[auto,10fr]'>
           <button className='group min-w-[9ch] max-w-[9ch] grid place-items-center'>
@@ -75,10 +76,10 @@ const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
           </button>
           <ul className='w-full grid grid-cols-7 gap-4 p-4 grid-rows-1'>
             {mappedDates.map(({ date, dayOfWeek }) => (
-              <li key={date.toISOString()} className='flex flex-col items-center gap-3'>
-                <span className={`uppercase text-xs ${isToday(date) ? 'text-sky-400' : 'text-neutral-500'}`}>{dayOfWeek}</span>
-                <span className={`text-2xl font-medium ${isToday(date) ? 'text-sky-400' : 'text-neutral-500'}`}>{date.getDate()}</span>
-              </li>
+              <Link href={{ pathname: '/day', query: { date: date.toISOString() }}} key={date.toISOString()} className={`flex flex-col items-center gap-3 transition-colors ${!isToday(date) && 'hover:!text-slate-900'} ${isToday(date) ? 'text-sky-400' : 'text-neutral-500'}`}>
+                <span className='uppercase text-xs'>{dayOfWeek}</span>
+                <span className='text-2xl font-medium'>{date.getDate()}</span>
+              </Link>
             ))}
           </ul>
         </div>
