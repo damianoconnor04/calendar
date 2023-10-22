@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
-import { format } from 'date-fns'
+import { format, isThisMonth } from 'date-fns'
 import RenderCalendar from './components/RenderCalendar'
 
 const Calendar: React.FC = () => {
@@ -20,10 +20,10 @@ const Calendar: React.FC = () => {
 
   return (
     <>
-      <header className="p-5 flex items-center border-b border-gray-400">
+      <header className='p-5 flex items-center border-b border-gray-400'>
         <button className='p-1.5 text-2xl text-neutral-700 rounded-full hover:bg-neutral-300/20 transition-colors' onClick={handlePreviousWeek}><IoChevronBack /></button>
         <button className='p-1.5 text-2xl text-neutral-700 rounded-full hover:bg-neutral-300/20 transition-colors' onClick={handleNextWeek}><IoChevronForward /></button>
-        <h1 className="ml-6 text-2xl text-neutral-700">{format(currentWeek, 'MMMM yyyy')}</h1>
+        <h1 className={`ml-6 text-2xl text-neutral-700 ${isThisMonth(currentWeek) && '!text-sky-400'}`}>{format(currentWeek, 'MMMM yyyy')}</h1>
       </header>
 
       <RenderCalendar currentWeek={currentWeek} currentHours={currentHours} />
