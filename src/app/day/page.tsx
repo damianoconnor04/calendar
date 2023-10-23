@@ -5,6 +5,7 @@ import { IoCaretDown, IoChevronBack, IoChevronForward } from 'react-icons/io5'
 import Dropdown, { Option } from 'react-dropdown'
 import 'react-dropdown/style.css'
 import { format, getDate, getYear, parseISO } from 'date-fns'
+import RenderDayCalendar from '../components/RenderDayCalendar'
 
 const Day = () => {
   const searchParams = useSearchParams()
@@ -67,7 +68,7 @@ const Day = () => {
           <button className='text-sky-400 ml-auto font-bold underline underline-offset-2' onClick={() => setCurrentDay(new Date())}>Today</button>
         </header>
 
-        
+        <RenderDayCalendar currentDay={currentDay} />
       </>
     )
   }

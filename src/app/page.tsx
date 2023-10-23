@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { IoCaretDown, IoChevronBack, IoChevronForward } from 'react-icons/io5'
 import { format, getYear, setYear, startOfMonth, startOfWeek } from 'date-fns'
-import RenderCalendar from './components/RenderCalendar'
+import RenderWeekCalendar from './components/RenderWeekCalendar'
 import Dropdown, { Option } from 'react-dropdown'
 import 'react-dropdown/style.css'
 
@@ -66,7 +66,7 @@ const Calendar: React.FC = () => {
         <button className='text-sky-400 ml-auto font-bold underline underline-offset-2' onClick={() => setCurrentWeek(startOfWeek(new Date()))}>Today</button>
       </header>
 
-      <RenderCalendar currentWeek={currentWeek} />
+      <RenderWeekCalendar currentWeek={currentWeek} />
     </>
   )
 }

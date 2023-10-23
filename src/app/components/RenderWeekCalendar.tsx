@@ -6,8 +6,8 @@ import Link from 'next/link'
 
 type Color = 'bg-sky-400' | 'bg-blue-500' | 'bg-purple-500' | 'bg-pink-500' | 'bg-red-500' | 'bg-orange-500' | 'bg-yellow-500' | 'bg-lime-500' | 'bg-green-500'
 
-interface RenderCalendarProps { currentWeek: Date }
-const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
+interface RenderWeekCalendarProps { currentWeek: Date }
+const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) => {
   useEffect(() => {
     const savedEventNames: { [key: string]: { name: string, color: Color} } = {}
     for (let i = 0; i < localStorage.length; i++) {
@@ -61,7 +61,7 @@ const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
   const mapHoursToDaysOfWeek = (hours: Date[]): { hours: Date; hour: string }[] =>
     hours.map((hours) => ({ hours, hour: hours.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric' }) }))
 
-  const renderCalendar = () => {
+  const renderWeekCalendar = () => {
     const dates = generateDates()
     const hours = generateHours()
     const mappedDates = mapDatesToDaysOfWeek(dates)
@@ -85,14 +85,15 @@ const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
         </div>
 
         <main className='h-[calc(100%_-_5.75rem)] grid grid-cols-[auto,10fr] overflow-y-scroll hide-scroll'>
-          <div className='grid grid-rows-24 p-2 max-w-[9ch] w-full'>
+          <ul className='grid grid-rows-24 p-2 max-w-[9ch] min-w-[9ch]'>
             {mappedHours.map(({ hour }) => (
-              <li key={hour} className='flex flex-col items-end gap-3 p-2'>
+              <li key={hour} className='ml-auto gap-3 p-2'>
                 <span className='uppercase text-xs text-neutral-500'>{hour}</span>
               </li>
             ))}
-          </div>
-          <section id='dates-container' className='w-full grid grid-cols-7 grid-rows-24 p-2 overflow-hidden'>
+          </ul>
+          <section className='relative w-full grid grid-cols-7 grid-rows-24 p-2 overflow-hidden'>
+          {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} setEventModal={setEventModal} removeEvent={removeEvent} />}
             {mappedDates.map(({ date, dayOfWeek }) => (
               <div key={dayOfWeek} className='grid grid-cols-1 grid-rows-24 border-r border-gray-300 last:border-none'>
                 {mappedHours.map(({ hour }) => (
@@ -108,14 +109,13 @@ const RenderCalendar: React.FC<RenderCalendarProps> = ({ currentWeek }) => {
                 ))}
               </div>
             ))}
-            {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} setEventModal={setEventModal} removeEvent={removeEvent} />}
           </section>
         </main>
 
       </div>
     )
   }
-  return renderCalendar()
+  return renderWeekCalendar()
 }
 
-export default RenderCalendar
+export default RenderWeekCalendar
