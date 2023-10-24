@@ -48,8 +48,8 @@ const Day = () => {
             <Dropdown
               arrowClosed={<IoCaretDown className='text-sm' />}
               arrowOpen={<IoCaretDown className='text-sm' />}
-              controlClassName='!cursor-pointer !p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
-              menuClassName='!border-none !bg-white !max-h-[60vh] !w-max !overflow-x-hidden'
+              controlClassName='!bg-[#FaF9F9] !cursor-pointer !p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
+              menuClassName='!border-none !bg-[#FaF9F9] !max-h-[60vh] !w-max !overflow-x-hidden'
               options={monthOptions}
               value={format(currentDay, 'MMMM')}
               onChange={(e) => handleMonthChange(e)}
@@ -57,8 +57,8 @@ const Day = () => {
             <Dropdown
               arrowClosed={<IoCaretDown className='text-sm' />}
               arrowOpen={<IoCaretDown className='text-sm' />}
-              controlClassName='!cursor-pointer !p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
-              menuClassName='!border-none !bg-white !max-h-[60vh] !w-max !overflow-x-hidden'
+              controlClassName='!bg-[#FaF9F9] !cursor-pointer !p-0 !py-1 !shadow-none !border-transparent !border-b-gray-300 hover:!border-b-sky-400 transition-colors !text-neutral-600 text-xl font-medium flex items-center gap-3'
+              menuClassName='!border-none !bg-[#FaF9F9] !max-h-[60vh] !w-max !overflow-x-hidden'
               options={dayOptions}
               value={format(currentDay, 'dd')}
               onChange={(e) => handleDayChange(e)}

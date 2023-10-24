@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { IoAddCircle } from 'react-icons/io5'
 import EventModal from './EventModal'
-import { startOfWeek, endOfWeek, addDays, format, isToday, setHours, getHours, startOfHour, addHours, setMinutes } from 'date-fns'
+import { startOfWeek, endOfWeek, addDays, format, isToday, setHours, addHours, setMinutes } from 'date-fns'
 import Link from 'next/link'
 
 type Color = 'bg-sky-400' | 'bg-blue-500' | 'bg-purple-500' | 'bg-pink-500' | 'bg-red-500' | 'bg-orange-500' | 'bg-yellow-500' | 'bg-lime-500' | 'bg-green-500'
@@ -12,7 +12,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
     const savedEventNames: { [key: string]: { name: string, color: Color} } = {}
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
-      if (key) savedEventNames[key] = JSON.parse(localStorage.getItem(key) ?? '') //when null return string so typescript not angry
+      if (key) savedEventNames[key] = JSON.parse(localStorage.getItem(key) ?? '')
     }
     setEventNames(savedEventNames)
   }, [])
@@ -92,8 +92,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
               </li>
             ))}
           </ul>
-          <section className='relative w-full grid grid-cols-7 grid-rows-24 p-2 overflow-hidden'>
-          {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} setEventModal={setEventModal} removeEvent={removeEvent} />}
+          <section id='dates-container' className='w-full grid grid-cols-7 grid-rows-24 p-2 overflow-hidden'>
             {mappedDates.map(({ date, dayOfWeek }) => (
               <div key={dayOfWeek} className='grid grid-cols-1 grid-rows-24 border-r border-gray-300 last:border-none'>
                 {mappedHours.map(({ hour }) => (
@@ -109,9 +108,9 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
                 ))}
               </div>
             ))}
+            {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} eventModal={eventModal} setEventModal={setEventModal} removeEvent={removeEvent} />}
           </section>
         </main>
-
       </div>
     )
   }
