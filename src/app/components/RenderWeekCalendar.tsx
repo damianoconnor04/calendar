@@ -23,7 +23,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
   const createNewEvent = (hour: string, date: string) => {
     const id = `${hour}-${date}`
     setClickedId(id)
-    if (!eventNames[id]) setEventNames(prevNames => ({ ...prevNames, [id]: { name: 'New event', color: 'bg-sky-400' } }))
+    if (!eventNames[id]) setEventNames(prevNames => ({ ...prevNames, [id]: { name: '', color: 'bg-sky-400' } }))
     setEventModal(true)
   }
 
@@ -100,7 +100,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
                     <button onClick={() => createNewEvent(hour, format(date, 'EEEE-MMMM-dd'))} className='w-full h-full hover:ring-[1px] hover:ring-sky-400'>
                       {eventNames[`${hour}-${format(date, 'EEEE-MMMM-dd')}`] && 
                         <div className={`w-full h-full truncate grid place-items-center text-white font-medium text-sm ${eventNames[`${hour}-${format(date, 'EEEE-MMMM-dd')}`].color}`}>
-                          {eventNames[`${hour}-${format(date, 'EEEE-MMMM-dd')}`].name.toString()}
+                          {eventNames[`${hour}-${format(date, 'EEEE-MMMM-dd')}`].name.toString() !== '' ? eventNames[`${hour}-${format(date, 'EEEE-MMMM-dd')}`].name.toString() : 'New event' }
                         </div>
                       }
                     </button>
@@ -108,7 +108,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
                 ))}
               </div>
             ))}
-            {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} eventModal={eventModal} setEventModal={setEventModal} removeEvent={removeEvent} />}
+            {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} setEventModal={setEventModal} removeEvent={removeEvent} />}
           </section>
         </main>
       </div>
