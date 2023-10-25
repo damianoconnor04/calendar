@@ -7,9 +7,9 @@ Persistence relies on localStorage cache; no accounts, tokens, or cookies yet
 - Create event in 1 hour time block  
 - Rename, save, or delete events
 - Change color of events
+- Drag <s>and drop events</s>
 
 **Future:**  
 - Below and above 1 hour events  
 - Change time of an event  
-- Drag and drop events  
 - Repeat event (daily, weekly)  
