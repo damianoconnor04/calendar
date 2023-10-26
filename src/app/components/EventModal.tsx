@@ -8,9 +8,10 @@ import { addDays, format, getMonth } from 'date-fns'
 const colors: Color[] = ['bg-sky-400', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-lime-500', 'bg-green-500']
 type Color = 'bg-sky-400' | 'bg-blue-500' | 'bg-purple-500' | 'bg-pink-500' | 'bg-red-500' | 'bg-orange-500' | 'bg-yellow-500' | 'bg-lime-500' | 'bg-green-500'
 
-interface EventModalProps { clickedId: string | null, eventNames: { [key: string]: { name: string, color: Color, start: string, end: string } }, setEventNames: React.Dispatch<React.SetStateAction<{ [key: string]: { name: string, color: Color, start: string, end: string } }>>, setEventModal: React.Dispatch<React.SetStateAction<boolean>>, removeEvent: (start: string, end: string, date: string) => void }
-const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEventNames, setEventModal, removeEvent }) => {
+interface EventModalProps { clickedId: string | null, eventNames: { [key: string]: { name: string, color: Color, start: string, end: string, repeat: string, isCopy: boolean, copyOf: string } }, setEventNames: React.Dispatch<React.SetStateAction<{ [key: string]: { name: string, color: Color, start: string, end: string, repeat: string, isCopy: boolean, copyOf: string } }>>, setEventModal: React.Dispatch<React.SetStateAction<boolean>> }
+const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEventNames, setEventModal }) => {
   if (clickedId === null) return null
+  const clickedEvent = eventNames[clickedId]
   useEffect(() => {
     const savedEventName = localStorage.getItem(clickedId)
     if (savedEventName) setEventNames(prevNames => ({ ...prevNames, [clickedId]: JSON.parse(savedEventName) }))
@@ -20,16 +21,46 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
   const generateEventId = (start: string, end: string, date: string) => { return `${start}-${end}-${date}` }
 
   const handleSave = () => {
-    if (eventNames[clickedId].name) {
-      localStorage.setItem(clickedId, JSON.stringify({ name: eventNames[clickedId]?.name, color: eventNames[clickedId]?.color, start: eventNames[clickedId]?.start, end: eventNames[clickedId]?.end }))
+    if (clickedEvent.name) {
+      if (clickedEvent.repeat === 'Does not repeat') {
+        localStorage.setItem(clickedId, JSON.stringify({ name: clickedEvent.name, color: clickedEvent.color, start: clickedEvent.start, end: clickedEvent.end, repeat: 'Does not repeat', isCopy: false, copyOf: '' }))
+        removeCopies()
+        Object.keys(eventNames).forEach(key => { if (eventNames[key].copyOf === clickedId ) removeEventById(key) })
+      } else {
+        Object.keys(eventNames).forEach(key => {
+          if (eventNames[key].copyOf === clickedId) localStorage.setItem(key, JSON.stringify({ name: clickedEvent.name, color: clickedEvent.color, start: clickedEvent.start, end: clickedEvent.end, repeat: eventNames[key]?.repeat, isCopy: eventNames[key].copyOf === clickedId ? true : false, copyOf: eventNames[key].copyOf === clickedId ? clickedId : '' }))
+          if (eventNames[key].isCopy === false) localStorage.setItem(clickedId, JSON.stringify({ name: clickedEvent.name, color: clickedEvent.color, start: clickedEvent.start, end: clickedEvent.end, repeat: clickedEvent.repeat, isCopy: false, copyOf: '' }))
+        })
+      }
       setEventModal(false)
-    }
-    else { alert('Name your event before saving') }
+    } else alert('Name your event before saving')
   }
   const handleRemove = () => {
     localStorage.removeItem(clickedId)
     removeEvent(start, end, date)
+    Object.keys(eventNames).forEach(key => {
+      if (eventNames[key].copyOf === clickedId) {
+        removeEventById(key)
+        localStorage.removeItem(key)
+      }
+    })
     setEventModal(false)
+  }
+  const removeCopies = () => Object.keys(eventNames).forEach(key => { if (eventNames[key].copyOf === clickedId) localStorage.removeItem(key) })
+  const removeEventById = (id: string) => {
+    setEventNames(prevNames => {
+      const newEventNames = { ...prevNames }
+      delete newEventNames[id]
+      return newEventNames
+    })
+  }
+  const removeEvent = (start: string, end: string, date: string) => {
+    const id = generateEventId(start, end, date)
+    setEventNames(prevNames => {
+      const newEventNames = { ...prevNames }
+      delete newEventNames[id]
+      return newEventNames
+    })
   }
   const handleModalClose = () => {
     setEventModal(false)
@@ -41,10 +72,10 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
   const [eventColor, setEventColor] = useState<Color>('bg-sky-400')
   const setColor = (color: Color) => {
     setEventColor(color)
-    if (clickedId) setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: eventNames[clickedId]?.name || '', color: color, start: eventNames[clickedId]?.start || '', end: eventNames[clickedId]?.end || '' } }))
+    setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: clickedEvent.name || '', color: color, start: clickedEvent.start || '', end: clickedEvent.end || '', repeat: clickedEvent.repeat || '', isCopy: clickedEvent.isCopy, copyOf: clickedEvent.copyOf || '' } }))
   }
 
-  const handleEventNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: e.target.value, color: eventNames[clickedId]?.color, start: eventNames[clickedId]?.start || '', end: eventNames[clickedId]?.end || '' } }))
+  const handleEventNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: e.target.value, color: clickedEvent.color, start: clickedEvent.start || '', end: clickedEvent.end || '', repeat: clickedEvent.repeat || '', isCopy: clickedEvent.isCopy, copyOf: clickedEvent.copyOf || '' } }))
 
   const eventElem = document.getElementById(`${clickedId}`)?.getBoundingClientRect()
   const containerElem = document.getElementById('dates-container')?.getBoundingClientRect()
@@ -58,7 +89,7 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
     if (eventElem?.bottom + 304 > viewportHeight) { top = eventElem?.top - 288 } // modal height causes y overflow, go to top (minus modal height)
   }
 
-  const [selectedFirstHour, setSelectedFirstHour] = useState<string>(eventNames[clickedId]?.start || '')
+  const [selectedFirstHour, setSelectedFirstHour] = useState<string>(clickedEvent.start || '')
   const hourOptions = Array.from({ length: 96 }, (_, idx) => {
     const hour24 = Math.floor(idx / 4)
     const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12
@@ -72,23 +103,22 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
   }
 
   const handleFirstHourChange = (e: Option) => {
-    setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: eventNames[clickedId]?.name || '', color: eventNames[clickedId]?.color || '', start: e.value, end: eventNames[clickedId]?.end || '' } }))
+    setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: clickedEvent.name || '', color: clickedEvent.color || '', start: e.value, end: clickedEvent.end || '', repeat: clickedEvent.repeat || '', isCopy: clickedEvent.isCopy, copyOf: clickedEvent.copyOf || '' } }))
     setSelectedFirstHour(e.value)
   }
-  const handleSecondHourChange = (e: Option) => setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: eventNames[clickedId]?.name || '', color: eventNames[clickedId]?.color || '', start: eventNames[clickedId]?.start || '', end: e.value } }))
+  const handleSecondHourChange = (e: Option) => setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: clickedEvent.name || '', color: clickedEvent.color || '', start: clickedEvent.start || '', end: e.value, repeat: clickedEvent.repeat || '', isCopy: clickedEvent.isCopy, copyOf: clickedEvent.copyOf || '' } }))
 
-  const repeatOptions = ['Does not repeat', 'Daily', 'Weekly', 'Weekdays']
-  const monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
+  const repeatOptions = ['Does not repeat', 'Daily']
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   const monthIndex = monthNames.indexOf(month)
   const handleRepeatChange = (e: Option) => {
     const option = e.value
-    const event = eventNames[clickedId]
-    if (option === 'Does not repeat') {}
+    setEventNames(prevNames => ({ ...prevNames, [clickedId]: { name: clickedEvent.name, color: clickedEvent.color, start: clickedEvent.start, end: clickedEvent.end, repeat: e.value, isCopy: false, copyOf: '' } }))
     if (option === 'Daily') {
-      for (let i = 1; i <= 7; i++) {
+      for (let i = 1; i <= 31; i++) {
         const newDate = new Date(new Date().getFullYear(), monthIndex, parseInt(dayInt) + i)
-        const newId = generateEventId(event.start, event.end, format(newDate, 'EEEE/MMMM/dd'))
-        setEventNames(prevNames => ({ ...prevNames, [newId]: event }))
+        const newId = generateEventId(clickedEvent.start, clickedEvent.end, format(newDate, 'EEEE/MMMM/dd'))
+        setEventNames(prevNames => ({ ...prevNames, [newId]: { name: clickedEvent.name, color: clickedEvent.color, start: clickedEvent.start, end: clickedEvent.end, repeat: 'Daily', isCopy: true, copyOf: clickedId } }))
       }
     }
   }
@@ -98,7 +128,7 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
 
   return (
     <>
-      <div onClick={handleModalClose} className='animate-fade animate-duration-200 absolute inset-0 w-full h-full bg-neutral-600/5' />
+      <div onClick={handleModalClose} className='animate-fade animate-duration-200 absolute inset-0 w-full h-full bg-neutral-500/5' />
       <Draggable handle='.handle' bounds='body'>
         <div className={`animate-fade animate-duration-200 animate-delay-50 w-full max-w-sm max-h-72 h-full bg-white rounded-xl flex flex-col shadow z-[9999]`} style={{ position: 'absolute', top: `${top}px`, left: `${left}px` }}>
           <header className='handle cursor-move bg-[#f1f3f4] border-b border-b-[#f1f3f4] flex justify-end rounded-t-xl p-1'>
@@ -107,7 +137,7 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
 
           <div className='flex flex-1 flex-col p-2'>
             <label htmlFor={`${clickedId}`} className='self-end max-w-[calc(90%_-_0.75rem)]'>
-              <input value={eventNames[clickedId].name.toString()} placeholder='New event' onChange={handleEventNameChange} className='pr-16 text-xl w-full border-b-2 border-b-gray-400/70 focus-visible:outline-none focus-visible:border-b-sky-400' />
+              <input value={clickedEvent.name.toString()} placeholder='New event' onChange={handleEventNameChange} className='pr-16 text-xl w-full border-b-2 border-b-gray-400/70 focus-visible:outline-none focus-visible:border-b-sky-400' />
             </label>
 
             <div className='flex items-center pt-3 pb-1 gap-2 ml-[calc(10%_+_0.75rem)]'>
@@ -134,7 +164,7 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
                         className='!max-w-fit'
                         menuClassName='!border-none !bg-[#FaF9F9] !w-max !overflow-x-hidden !max-h-40'
                         options={hourOptions}
-                        value={eventNames[clickedId]?.start || ''}
+                        value={clickedEvent.start || ''}
                         onChange={(e) => handleFirstHourChange(e)}
                       />
                     </button>
@@ -148,7 +178,7 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
                             className='!max-w-fit'
                             menuClassName='!border-none !bg-[#FaF9F9] !w-max !overflow-x-hidden !max-h-40'
                             options={secondHourOptions()}
-                            value={eventNames[clickedId]?.end || ''}
+                            value={clickedEvent.end || ''}
                             onChange={(e) => handleSecondHourChange(e)}
                           />
                         </button>
@@ -164,7 +194,7 @@ const EventModal: React.FC<EventModalProps> = ({ clickedId, eventNames, setEvent
                     controlClassName='!bg-inherit !cursor-pointer !p-1 !shadow-none !border-transparent transition-colors !text-neutral-600 flex items-center gap-2'
                     menuClassName='!border-none !bg-[#FaF9F9] !max-h-32 !overflow-x-hidden !w-max'
                     options={repeatOptions}
-                    value={'Does not repeat'}
+                    value={clickedEvent.repeat || ''}
                     onChange={(e) => handleRepeatChange(e)}
                   />
                 </button>

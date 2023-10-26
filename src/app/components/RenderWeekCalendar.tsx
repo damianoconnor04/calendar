@@ -9,7 +9,7 @@ type Color = 'bg-sky-400' | 'bg-blue-500' | 'bg-purple-500' | 'bg-pink-500' | 'b
 interface RenderWeekCalendarProps { currentWeek: Date }
 const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) => {
   useEffect(() => {
-    const savedEventNames: { [key: string]: { name: string, color: Color, start: string, end: string } } = {}
+    const savedEventNames: { [key: string]: { name: string, color: Color, start: string, end: string, repeat: string, isCopy: boolean, copyOf: string } } = {}
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
       if (key) savedEventNames[key] = JSON.parse(localStorage.getItem(key) ?? '')
@@ -18,7 +18,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
   }, [])
   const [clickedId, setClickedId] = useState<string | null>(null)
   const [eventModal, setEventModal] = useState<boolean>(false)
-  const [eventNames, setEventNames] = useState<{ [key: string]: { name: string, color: Color, start: string, end: string } }>({})
+  const [eventNames, setEventNames] = useState<{ [key: string]: { name: string, color: Color, start: string, end: string, repeat: string, isCopy: boolean, copyOf: string } }>({})
 
   const generateEventId = (start: string, end: string, date: string) => { 
     const id = `${start}-${end}-${date}`
@@ -35,17 +35,8 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
     const id = generateEventId(hourInt + ':00' + timestamp, nextHour, date)
     setClickedId(id)
 
-    if (!eventNames[id]) setEventNames(prevNames => ({ ...prevNames, [id]: { name: '', color: 'bg-sky-400', start: hourInt + ':00' + timestamp, end: nextHour } }))
+    if (!eventNames[id]) setEventNames(prevNames => ({ ...prevNames, [id]: { name: '', color: 'bg-sky-400', start: hourInt + ':00' + timestamp, end: nextHour, repeat: 'Does not repeat', isCopy: false, copyOf: '' } }))
     setEventModal(true)
-  }
-
-  const removeEvent = (start: string, end: string, date: string) => {
-    const id = generateEventId(start, end, date)
-    setEventNames(prevNames => {
-      const newEventNames = { ...prevNames }
-      delete newEventNames[id]
-      return newEventNames
-    })
   }
 
   const generateDates = () => {
@@ -112,7 +103,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
       <div className='h-full max-h-[calc(100%_-_10vh)] overflow-hidden'>
 
         <div className='grid grid-cols-[auto,10fr]'>
-          <button className='group min-w-[9ch] max-w-[9ch] grid place-items-center'>
+          <button className='group min-w-[8ch] max-w-[8ch] grid place-items-center'>
             <IoAddCircle className='text-4xl text-sky-400 group-hover:scale-125 transition-transform' />
           </button>
           <ul className='w-full grid grid-cols-7 gap-4 p-4 grid-rows-1'>
@@ -126,7 +117,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
         </div>
 
         <main className='h-[calc(100%_-_5.75rem)] grid grid-cols-[auto,10fr] overflow-y-scroll hide-scroll'>
-          <ul className='grid grid-rows-24 p-2 max-w-[7ch] min-w-[7ch]'>
+          <ul className='grid grid-rows-24 p-2 max-w-[8ch] min-w-[8ch]'>
             {mappedHours.map(({ hour }) => (
               <li key={hour} className='ml-auto h-10 max-h-10 min-h-10 flex justify-center items-center'>
                 <span className='uppercase text-xs text-neutral-500'>{hour}</span>
@@ -165,7 +156,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
                 })}
               </div>
             ))}
-            {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} setEventModal={setEventModal} removeEvent={removeEvent} />}
+            {eventModal && <EventModal clickedId={clickedId} eventNames={eventNames} setEventNames={setEventNames} setEventModal={setEventModal} />}
           </section>
         </main>
       </div>
