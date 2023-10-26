@@ -92,7 +92,6 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
     return { top, height }
   }
 
-
   const renderWeekCalendar = () => {
     const dates = generateDates()
     const hours = generateHours()
@@ -145,7 +144,7 @@ const RenderWeekCalendar: React.FC<RenderWeekCalendarProps> = ({ currentWeek }) 
                   if (event) {
                     const { top, height } = calculateCellPosition(event.start, event.end)
                     return (
-                      <button id={id} key={id} className='absolute w-full' style={{ top: `${top}%`, height: `${height}%` }} onClick={() => createNewEvent(hour, format(date, 'EEEE/MMMM/dd'))}>
+                      <button id={id} key={id} className='absolute w-full z-[9999]' style={{ top: `${top}%`, height: `${height}%` }} onClick={() => createNewEvent(hour, format(date, 'EEEE/MMMM/dd'))}>
                         <div className={`w-full h-full truncate grid place-items-center text-white font-medium text-sm ${event.color}`}>
                           {event.name.toString() !== '' ? event.name.toString() : 'New event'}
                         </div>
